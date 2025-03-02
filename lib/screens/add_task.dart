@@ -92,8 +92,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text(widget.isEditing ? 'Update Task' : 'Add Task'),
                 style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15)),
+                child: Text(widget.isEditing ? 'Update Task' : 'Add Task'),
               ),
             ),
           ],

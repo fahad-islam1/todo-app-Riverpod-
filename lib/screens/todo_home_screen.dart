@@ -35,7 +35,9 @@ class TodoHomeScreen extends ConsumerWidget {
                       leading: Checkbox(
                         value: task.status == "completed",
                         onChanged: (bool? value) {
-                          // Handle task completion logic here
+                   
+
+
                         },
                       ),
                       trailing: Row(
