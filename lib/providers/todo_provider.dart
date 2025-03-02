@@ -27,3 +27,4 @@ class TodoNotifier extends StateNotifier<List<TodoModel>> {
         state.map((task) => task.id == taskId ? updatedTask : task).toList();
   }
 }
+final taskProvider = StateNotifierProvider<TodoNotifier, List<TodoModel>>((ref) => TodoNotifier(TodoHiveService()));

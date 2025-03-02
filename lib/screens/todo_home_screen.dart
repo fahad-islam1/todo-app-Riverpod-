@@ -1,51 +1,71 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/screens/add_task.dart';
+class TodoHomeScreen extends ConsumerWidget {
+  const TodoHomeScreen({super.key});
 
-class TodoHomeScreen extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tasks = ref.watch(taskProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('To-Do List', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('To-Do List', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
+      body: tasks.isEmpty
+          ? const Center(
+              child: Text('No tasks available', style: TextStyle(fontSize: 20)),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
               child: ListView.builder(
-                itemCount: 5, // Replace with dynamic count
+                itemCount: tasks.length,
                 itemBuilder: (context, index) {
+                  final task = tasks[index];
                   return Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 4,
-                    margin: EdgeInsets.symmetric(vertical: 8),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
-                      title: Text('Task ${index + 1}', style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text('Description of task ${index + 1}\nDue: 10:00 AM, 1 Jan 2025'),
+                      title: Text(task.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text('${task.description}\nDue: ${task.date} at ${task.time}'),
                       leading: Checkbox(
-                        value: false, // Replace with dynamic value
-                        onChanged: (bool? value) {},
+                        value: task.status == "completed",
+                        onChanged: (bool? value) {
+                          // Handle task completion logic here
+                        },
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.edit, color: Colors.blue),
+                            icon: const Icon(Icons.edit, color: Colors.blue),
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AddTaskScreen(isEditing: true, taskTitle: 'Task ${index + 1}', taskDescription: 'Description of task ${index + 1}', selectedDate: DateTime.now(), selectedTime: TimeOfDay.now()),
+                                  builder: (context) => AddTaskScreen(
+                                    isEditing: true,
+                                    taskTitle: task.title,
+                                    taskDescription: task.description,
+                                    selectedDate: DateTime.parse(task.date),
+                                    selectedTime: TimeOfDay(
+                                      hour: int.parse(task.time.split(":")[0]),
+                                      minute: int.parse(task.time.split(":")[1]),
+                                    ),
+                                  ),
                                 ),
                               );
                             },
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {},
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              ref.read(taskProvider.notifier).deleteTask(task.id);
+                            },
                           ),
                         ],
                       ),
@@ -54,17 +74,11 @@ class TodoHomeScreen extends StatelessWidget {
                 },
               ),
             ),
-          ],
-        ),
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddTaskScreen()),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddTaskScreen()));
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

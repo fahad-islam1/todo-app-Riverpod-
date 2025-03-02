@@ -10,7 +10,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(TodoModelAdapter());
- await Hive.openBox(Appconst.todoBox);
+  await Hive.openBox<TodoModel>(Appconst.todoBox);
+
   runApp(ProviderScope(child: const MyApp()));
 }
 
