@@ -84,6 +84,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   icon: Icon(Icons.calendar_today),
                   onPressed: () => _pickDateTime(context),
                 ),
+                IconButton(
+                  icon: Icon(Icons.calendar_today),
+                  onPressed: () => _pickDateTime(context),
+                ),
               ],
             ),
             SizedBox(height: 20),
