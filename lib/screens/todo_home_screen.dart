@@ -12,7 +12,7 @@ class TodoHomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('T', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('To-Do List', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: tasks.isEmpty
