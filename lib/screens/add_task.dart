@@ -75,7 +75,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 Expanded(
                   child: Text(
                     selectedDate == null
-                        ? 'Select Date &\ Time'
+                        ? 'Select Date & Time'
                         : '${selectedDate!.toLocal()} at ${selectedTime!.format(context)}',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
