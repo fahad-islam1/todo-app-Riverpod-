@@ -88,6 +88,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ],
             ),
             SizedBox(height: 20),
+            SizedBox(height: 20),
+            SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
