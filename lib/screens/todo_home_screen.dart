@@ -17,7 +17,7 @@ class TodoHomeScreen extends ConsumerWidget {
       ),
       body: tasks.isEmpty
           ? const Center(
-              child: Text('No tasks available ', style: TextStyle(fontSize: 20)),
+              child: Text('No tasks available', style: TextStyle(fontSize: 20)),
             )
           : Padding(
               padding: const EdgeInsets.all(16.0),
