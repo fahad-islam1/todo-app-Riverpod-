@@ -24,4 +24,7 @@ class TodoHiveService {
   void updateTask(String taskId, TodoModel updatedTask) {
     _box.put(taskId, updatedTask);
   }
+  void updateTaskstatus(String taskId, TodoModel updatedTask) {
+    _box.put(taskId, updatedTask);
+  }
 }

@@ -35,8 +35,8 @@ class TodoHomeScreen extends ConsumerWidget {
                       leading: Checkbox(
                         value: task.status == "completed",
                         onChanged: (bool? value) {
-                   
-
+                   final statusUpdate=value==true?"completed":"pending";
+ ref.read(taskProvider.notifier).updatedTaskStatus(task.id,statusUpdate);
 
                         },
                       ),
@@ -51,13 +51,7 @@ class TodoHomeScreen extends ConsumerWidget {
                                 MaterialPageRoute(
                                   builder: (context) => AddTaskScreen(
                                     isEditing: true,
-                                    taskTitle: task.title,
-                                    taskDescription: task.description,
-                                    selectedDate: DateTime.parse(task.date),
-                                    selectedTime: TimeOfDay(
-                                      hour: int.parse(task.time.split(":")[0]),
-                                      minute: int.parse(task.time.split(":")[1]),
-                                    ),
+                                   task: task,
                                   ),
                                 ),
                               );

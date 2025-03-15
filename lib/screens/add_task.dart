@@ -1,53 +1,76 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:todo_app/model/todo_model.dart';
+import 'package:todo_app/providers/todo_provider.dart';
 
-class AddTaskScreen extends StatefulWidget {
+class AddTaskScreen extends ConsumerStatefulWidget {
   final bool isEditing;
-  final String? taskTitle;
-  final String? taskDescription;
-  final DateTime? selectedDate;
-  final TimeOfDay? selectedTime;
+  final TodoModel? task;
 
-  AddTaskScreen({this.isEditing = false, this.taskTitle, this.taskDescription, this.selectedDate, this.selectedTime});
+  AddTaskScreen({this.isEditing = false, this.task});
 
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
 
-class _AddTaskScreenState extends State<AddTaskScreen> {
+class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
   late TextEditingController titleController;
   late TextEditingController descriptionController;
-  DateTime? selectedDate;
-  TimeOfDay? selectedTime;
+  String? selectedDate; 
+  String? selectedTime; 
+  String? status; 
 
   @override
   void initState() {
     super.initState();
-    titleController = TextEditingController(text: widget.taskTitle ?? '');
-    descriptionController = TextEditingController(text: widget.taskDescription ?? '');
-    selectedDate = widget.selectedDate;
-    selectedTime = widget.selectedTime;
+    titleController = TextEditingController(text: widget.task?.title ?? '');
+    descriptionController = TextEditingController(text: widget.task?.description ?? '');
+    selectedDate = widget.task?.date;
+    selectedTime = widget.task?.time;
+    status = widget.task?.status;
   }
 
   Future<void> _pickDateTime(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
+      initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
       final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
-        initialTime: selectedTime ?? TimeOfDay.now(),
+        initialTime: TimeOfDay.now(),
       );
       if (pickedTime != null) {
         setState(() {
-          selectedDate = pickedDate;
-          selectedTime = pickedTime;
+          selectedDate = DateFormat('yyyy-MM-dd').format(pickedDate); 
+          selectedTime = pickedTime.format(context); 
         });
       }
     }
+  }
+
+  void _saveTask() {
+    final todoNotifier = ref.read(taskProvider.notifier);
+
+    final newTask = TodoModel(
+      id: widget.isEditing ? widget.task!.id : DateTime.now().millisecondsSinceEpoch.toString(),
+      title: titleController.text,
+      description: descriptionController.text,
+      date: selectedDate ?? DateFormat('yyyy-MM-dd').format(DateTime.now()), // Default to today
+      time: selectedTime ?? TimeOfDay.now().format(context), 
+      status:status??"",
+    );
+
+    if (widget.isEditing) {
+      todoNotifier.updateTask(widget.task!.id, newTask);
+    } else {
+      todoNotifier.addTask(newTask);
+    }
+
+    Navigator.pop(context);
   }
 
   @override
@@ -74,9 +97,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    selectedDate == null
+                    selectedDate == null || selectedTime == null
                         ? 'Select Date & Time'
-                        : '${selectedDate!.toLocal()} at ${selectedTime!.format(context)}',
+                        : '$selectedDate at $selectedTime',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -84,16 +107,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   icon: Icon(Icons.calendar_today),
                   onPressed: () => _pickDateTime(context),
                 ),
-               
               ],
             ),
             SizedBox(height: 20),
-            
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: _saveTask,
                 style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15)),
                 child: Text(widget.isEditing ? 'Update Task' : 'Add Task'),
               ),
